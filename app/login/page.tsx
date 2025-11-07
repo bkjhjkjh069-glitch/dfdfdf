@@ -1,9 +1,38 @@
 'use client'
 
-import { signIn } from 'next-auth/react'
+import { signIn, useSession } from 'next-auth/react'
 import { Shield } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 
 export default function LoginPage() {
+  const { data: session, status } = useSession()
+  const router = useRouter()
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (status === 'authenticated') {
+      router.push('/dashboard')
+    }
+  }, [status, router])
+
+  // Show loading while checking session
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen pt-24 pb-12 px-4 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-discord-blurple mx-auto mb-4"></div>
+          <p className="text-gray-400">Checking authentication...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Don't render login form if authenticated
+  if (status === 'authenticated') {
+    return null
+  }
+
   return (
     <div className="min-h-screen pt-24 pb-12 px-4 flex items-center justify-center">
       <div className="bg-discord-dark border border-white/10 rounded-lg p-8 max-w-md w-full text-center">
@@ -13,7 +42,7 @@ export default function LoginPage() {
           Sign in with Discord to access the application portal
         </p>
         <button
-          onClick={() => signIn('discord', { callbackUrl: '/' })}
+          onClick={() => signIn('discord', { callbackUrl: '/dashboard' })}
           className="btn-primary w-full flex items-center justify-center gap-2"
         >
           <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
