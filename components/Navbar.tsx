@@ -1,9 +1,9 @@
 'use client'
 
 import Link from 'next/link'
-import { Menu, X, User, FileText } from 'lucide-react'
+import { Menu, X, User, FileText, LogOut } from 'lucide-react'
 import { useState } from 'react'
-import { useSession } from 'next-auth/react'
+import { useSession, signOut } from 'next-auth/react'
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
@@ -45,6 +45,15 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
+            {session && (
+              <button
+                onClick={() => signOut({ callbackUrl: '/auth/login' })}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-red-500/20 transition-all duration-300 text-gray-300 hover:text-white"
+              >
+                <LogOut className="w-4 h-4" />
+                Sign Out
+              </button>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -70,6 +79,18 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
+            {session && (
+              <button
+                onClick={() => {
+                  setIsOpen(false)
+                  signOut({ callbackUrl: '/auth/login' })
+                }}
+                className="flex items-center gap-2 px-4 py-3 rounded-lg hover:bg-red-500/20 transition-all duration-300 text-gray-300 hover:text-white w-full"
+              >
+                <LogOut className="w-4 h-4" />
+                Sign Out
+              </button>
+            )}
           </div>
         )}
       </div>
